@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Order</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<!-- Edit Item Modal -->
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content shadow rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-semibold">Edit Order Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <div class="mb-3">
+          <label class="form-label fw-medium">Product ID</label>
+          <input type="number" id="editProductID" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-medium">Quantity</label>
+          <input type="number" id="editQuantity" class="form-control" min="1">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-medium">Tax</label>
+          <input type="number" id="editTax" step="0.01" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button class="btn btn-primary rounded-pill px-4" id="saveEditBtn">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<body class="bg-light">
+  <div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="mb-0">Create Order</h3>
+      <a href="cashier_dashboard.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+    </div>
+    <form id="orderForm" class="card shadow-sm">
+      <div class="card-body">
+        <!-- Customer type -->
+        <div class="mb-3">
+          <div class="form-label fw-semibold">Is this an existing customer?</div>
+          <div class="d-flex gap-4">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="existingCustomer" name="customerType" value="existing" checked>
+              <label class="form-check-label" for="existingCustomer">Yes</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="newCustomer" name="customerType" value="new">
+              <label class="form-check-label" for="newCustomer">No</label>
+            </div>
+          </div>
+        </div>
+        <!-- Existing customer section -->
+        <div id="existingCustomerSection" class="card mb-3">
+          <div class="card-body">
+            <h6 class="card-title mb-3">Existing Customer</h6>
+            <label for="customerID" class="form-label">Customer ID</label>
+            <input type="number" id="customerID" name="customerID" class="form-control">
+          </div>
+        </div>
+        <!-- New customer section -->
+        <div id="newCustomerSection" class="card mb-3" style="display:none;">
+          <div class="card-body">
+            <h6 class="card-title mb-3">New Customer Information</h6>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="newName" class="form-label">Name</label>
+                <input type="text" id="newName" name="newName" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="newEmail" class="form-label">Email</label>
+                <input type="email" id="newEmail" name="newEmail" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="newPhone" class="form-label">Phone</label>
+                <input type="text" id="newPhone" name="newPhone" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Payment method -->
+        <div class="mb-3">
+          <label for="paymentMethod" class="form-label">Payment Method</label>
+          <select id="paymentMethod" name="paymentMethod" class="form-select" required>
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+          </select>
+        </div>
+        <!-- Receival method -->
+        <div class="mb-3">
+          <div class="form-label fw-semibold">Receival Method</div>
+          <div class="d-flex gap-4">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="pickup" name="receivalMethod" value="Pickup" checked>
+              <label class="form-check-label" for="pickup">Pickup</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="delivery" name="receivalMethod" value="Delivery">
+              <label class="form-check-label" for="delivery">Delivery</label>
+            </div>
+          </div>
+        </div>
+        <!-- Pickup section -->
+        <div id="pickupSection" class="card mb-3">
+          <div class="card-body">
+            <h6 class="card-title mb-3">Pickup Details</h6>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="branchCountry" class="form-label">Branch Country</label>
+                <input type="text" id="branchCountry" name="branchCountry" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="branchCity" class="form-label">Branch City</label>
+                <input type="text" id="branchCity" name="branchCity" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="branchStreet" class="form-label">Branch Street</label>
+                <input type="text" id="branchStreet" name="branchStreet" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Delivery section -->
+        <div id="deliverySection" class="card mb-3" style="display:none;">
+          <div class="card-body">
+            <h6 class="card-title mb-3">Delivery Details</h6>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="homeCountry" class="form-label">Home Country</label>
+                <input type="text" id="homeCountry" name="homeCountry" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="homeCity" class="form-label">Home City</label>
+                <input type="text" id="homeCity" name="homeCity" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label for="homeStreet" class="form-label">Home Street</label>
+                <input type="text" id="homeStreet" name="homeStreet" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Order Items section -->
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Order Items</h5>
+            <div class="row g-3 align-items-end mb-3">
+              <div class="col-md-3">
+                <label for="productID" class="form-label">Product ID</label>
+                <input type="number" id="productID" class="form-control">
+              </div>
+              <div class="col-md-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" id="quantity" class="form-control">
+              </div>
+              <div class="col-md-3">
+                <label for="tax" class="form-label">Tax</label>
+                <input type="number" id="tax" step="0.01" class="form-control">
+              </div>
+              <div class="col-md-3 d-grid">
+                <button type="button" id="addItemButton" class="btn btn-success">
+                  Add Item
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Product ID</th>
+                    <th>Quantity</th>
+                    <th>Tax</th>
+                    <th style="width: 160px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="itemsTableBody"></tbody>
+              </table>
+            </div>
+            <input type="hidden" name="itemsData" id="itemsData">
+          </div>
+        </div>
+        <input type="hidden" name="finalCustomerID" id="finalCustomerID">
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-primary px-4">Create Order</button>
+        </div>
+      </div>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/mock-store.js"></script>
+    <!-- JS part for Edit Modal -->
+<script>
+const receivalRadios = document.getElementsByName("receivalMethod");
+const pickupSection = document.getElementById("pickupSection");
+const deliverySection = document.getElementById("deliverySection");
+function updateReceivalView() {
+    const selected = document.querySelector('input[name="receivalMethod"]:checked');
+    const pickupInputs = pickupSection.querySelectorAll("input");
+    const deliveryInputs = deliverySection.querySelectorAll("input");
+    if (selected.value === "Pickup") {
+        pickupSection.style.display = "block";
+        deliverySection.style.display = "none";
+        pickupInputs.forEach(input => input.disabled = false);
+        deliveryInputs.forEach(input => input.disabled = true);
+        deliveryInputs.forEach(input => input.value = "");
+    } else {
+        pickupSection.style.display = "none";
+        deliverySection.style.display = "block";
+        pickupInputs.forEach(input => input.disabled = true);
+        deliveryInputs.forEach(input => input.disabled = false);
+        pickupInputs.forEach(input => input.value = "");
+    }
+}
+receivalRadios.forEach(r => r.addEventListener("change", updateReceivalView));
+updateReceivalView();
+const customerRadios = document.getElementsByName("customerType");
+const existingSection = document.getElementById("existingCustomerSection");
+const newSection = document.getElementById("newCustomerSection");
+const finalCustomerID = document.getElementById("finalCustomerID");
+const customerIDInput = document.getElementById("customerID");
+function updateCustomerView() {
+    const selected = document.querySelector('input[name="customerType"]:checked');
+    const newCustomerInputs = newSection.querySelectorAll("input");
+    if (selected.value === "existing") {
+        existingSection.style.display = "block";
+        newSection.style.display = "none";
+        customerIDInput.disabled = false;
+        newCustomerInputs.forEach(input => input.disabled = true);
+        finalCustomerID.value = customerIDInput.value;
+    } else {
+        existingSection.style.display = "none";
+        newSection.style.display = "block";
+        newCustomerInputs.forEach(input => input.disabled = false);
+        customerIDInput.disabled = true;
+        finalCustomerID.value = "";
+    }
+}
+customerRadios.forEach(r => r.addEventListener("change", updateCustomerView));
+customerIDInput.addEventListener("input", updateCustomerView);
+updateCustomerView();
+let items = [];
+let editIndex = null;
+const itemsTableBody = document.getElementById("itemsTableBody");
+const itemsData = document.getElementById("itemsData");
+const editModalEl = document.getElementById("editItemModal");
+const editModal = new bootstrap.Modal(editModalEl);
+const editProductID = document.getElementById("editProductID");
+const editQuantity  = document.getElementById("editQuantity");
+const editTax       = document.getElementById("editTax");
+const saveEditBtn   = document.getElementById("saveEditBtn");
+function renderItems() {
+    itemsTableBody.innerHTML = "";
+    items.forEach((item, i) => {
+        itemsTableBody.innerHTML += `
+        <tr>
+            <td>${item.pID}</td>
+            <td>${item.qty}</td>
+            <td>${item.tax}</td>
+            <td class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="editItem(${i})">Edit</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteItem(${i})">Delete</button>
+            </td>
+        </tr>`;
+    });
+}
+document.getElementById("addItemButton").addEventListener("click", e => {
+    e.preventDefault();
+    const pID = document.getElementById("productID").value;
+    const qty = document.getElementById("quantity").value;
+    const taxVal = document.getElementById("tax").value || 0;
+    if (!pID || !qty) return alert("Enter product ID and quantity");
+    items.push({ pID, qty, tax: taxVal });
+    itemsData.value = JSON.stringify(items);
+    renderItems();
+    document.getElementById("productID").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("tax").value = "";
+});
+function deleteItem(i) {
+    items.splice(i, 1);
+    itemsData.value = JSON.stringify(items);
+    renderItems();
+}
+function editItem(i) {
+    editIndex = i;
+    editProductID.value = items[i].pID;
+    editQuantity.value  = items[i].qty;
+    editTax.value       = items[i].tax;
+    editModal.show();
+}
+saveEditBtn.addEventListener("click", e => {
+    e.preventDefault();
+    if (editIndex === null) return;
+    items[editIndex] = {
+        pID: editProductID.value,
+        qty: editQuantity.value,
+        tax: editTax.value
+    };
+    itemsData.value = JSON.stringify(items);
+    renderItems();
+    editModal.hide();
+});
+/* ---------- Save order to MockStore instead of PHP ---------- */
+document.getElementById("orderForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (items.length === 0) return alert("Order must contain at least one item");
+    const payment = document.getElementById("paymentMethod").value;
+    const receival = document.querySelector('input[name="receivalMethod"]:checked').value;
+    const isNew = document.querySelector('input[name="customerType"]:checked').value === "new";
+    const customerName = isNew
+        ? (document.getElementById("newName").value || "New Customer")
+        : ("Customer #" + (document.getElementById("customerID").value || "?"));
+    let total = 0;
+    items.forEach(it => {
+        const price = MockStore.priceForProduct(it.pID);
+        total += price * Number(it.qty) * (1 + Number(it.tax || 0) / 100);
+    });
+    MockStore.addOrder({
+        payment: payment,
+        receival: receival,
+        customer_name: customerName,
+        total: total
+    });
+    window.location.href = "cashier_dashboard.html";
+});
+</script>
+  </div>
+</body>
+</html>

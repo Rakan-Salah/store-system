@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Analytics Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; color: #444; }
+.navbar { background: white; border-bottom: 1px solid #eee; }
+.card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.stat-card { padding: 1.5rem; }
+.stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+.bg-revenue { background: #e7f3ff; color: #0d6efd; }
+.bg-orders { background: #fff4e5; color: #fd7e14; }
+.bg-products { background: #e6fcf5; color: #20c997; }
+.bg-customers { background: #f3f0ff; color: #7048e8; }
+.chart-container { height: 320px; }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="cashier_dashboard.html">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</nav>
+<div class="container pb-5">
+    <h3 class="fw-bold mb-4">Sales Analytics</h3>
+    <!-- STAT CARDS -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon bg-revenue"><i class="fas fa-dollar-sign"></i></div>
+                <div class="text-muted small">Total Revenue</div>
+                <h4 class="fw-bold">$0</h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon bg-orders"><i class="fas fa-shopping-cart"></i></div>
+                <div class="text-muted small">Total Transactions</div>
+                <h4 class="fw-bold">0</h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon bg-products"><i class="fas fa-box"></i></div>
+                <div class="text-muted small">Products Sold</div>
+                <h4 class="fw-bold">0</h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon bg-customers"><i class="fas fa-users"></i></div>
+                <div class="text-muted small">Active Customers</div>
+                <h4 class="fw-bold">0</h4>
+            </div>
+        </div>
+    </div>
+    <!-- REVENUE CHART -->
+    <div class="card p-4">
+        <h5 class="fw-bold mb-4">Revenue (Last 7 Days)</h5>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+<script src="../js/mock-store.js"></script>
+<script>
+const data = MockStore.getSalesData();
+document.querySelector(".bg-revenue").nextElementSibling.nextElementSibling.innerText =
+    "$" + data.totalRevenue.toFixed(2);
+document.querySelector(".bg-orders").nextElementSibling.nextElementSibling.innerText =
+    data.totalOrders;
+document.querySelector(".bg-products").nextElementSibling.nextElementSibling.innerText =
+    data.productsSold;
+document.querySelector(".bg-customers").nextElementSibling.nextElementSibling.innerText =
+    data.activeCustomers;
+new Chart(document.getElementById("revenueChart"), {
+    type: "line",
+    data: {
+        labels: data.days,
+        datasets: [{
+            label: "Revenue",
+            data: data.revenueData,
+            borderColor: "#20c997",
+            backgroundColor: "rgba(32,201,151,0.1)",
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+</body>
+</html>

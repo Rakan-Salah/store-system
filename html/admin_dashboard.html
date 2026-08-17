@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f4f6f9}
+.card-user{border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+.avatar{width:55px;height:55px;border-radius:50%;background:#e9ecef;
+display:flex;align-items:center;justify-content:center;font-size:26px}
+</style>
+</head>
+<body>
+<div class="container py-4">
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h2>Employee Management</h2>
+<div class="d-flex gap-2">
+<a href="cashier_dashboard.html" class="btn btn-outline-primary">
+<i class="bi bi-arrow-left"></i> Cashier Dashboard
+</a>
+<a href="add_employee.html" class="btn btn-success">Add Employee</a>
+<a href="add_product.html" class="btn btn-dark">Products</a>
+</div>
+</div>
+<!-- SEARCH -->
+<div class="input-group mb-4">
+<input class="form-control" id="searchInput" placeholder="Search employee...">
+<button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+</div>
+<div class="row" id="employeeGrid"></div>
+</div>
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal fade" id="editModal">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<form id="editForm">
+<div class="modal-header">
+<h5>Edit Employee</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body row g-3">
+<input type="hidden" id="eID">
+<div class="col-md-6">
+<label>Name</label>
+<input class="form-control" id="Name" required>
+</div>
+<div class="col-md-6">
+<label>Email</label>
+<input class="form-control" id="Email" required>
+</div>
+<div class="col-md-4">
+<label>Country</label>
+<input class="form-control" id="Country" required>
+</div>
+<div class="col-md-4">
+<label>City</label>
+<input class="form-control" id="City" required>
+</div>
+<div class="col-md-4">
+<label>Street</label>
+<input class="form-control" id="Street">
+</div>
+<div class="col-md-6">
+<label>Account Holder Name</label>
+<input class="form-control" id="HolderName" required>
+</div>
+<div class="col-md-6">
+<label>Account Number</label>
+<input class="form-control" id="AccountNumber" required>
+</div>
+<div class="col-md-6">
+<label>Salary</label>
+<input type="number" class="form-control" id="salaryAmount" required>
+</div>
+<div class="col-md-6">
+<label>Previous Pay Date</label>
+<input type="date" class="form-control" id="PreviousPayDate">
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-success">Save Changes</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/mock-store.js"></script>
+<script>
+function openEdit(e){
+    document.getElementById("eID").value = e.EID ?? "";
+    document.getElementById("Name").value = e.NAME ?? "";
+    document.getElementById("Email").value = e.EMAIL ?? "";
+    document.getElementById("Country").value = e.COUNTRY ?? "";
+    document.getElementById("City").value = e.CITY ?? "";
+    document.getElementById("Street").value = e.STREET ?? "";
+    document.getElementById("HolderName").value = e.HOLDERNAME ?? "";
+    document.getElementById("AccountNumber").value = e.ACCOUNTNUMBER ?? "";
+    document.getElementById("salaryAmount").value = e.SALARYAMOUNT ?? "";
+    document.getElementById("PreviousPayDate").value =
+        e.PREVIOUSPAYDATE ? e.PREVIOUSPAYDATE.substring(0,10) : "";
+    new bootstrap.Modal(document.getElementById("editModal")).show();
+}
+let employees = MockStore.getEmployees();
+renderEmployees(employees);
+function renderEmployees(data){
+    let grid = document.getElementById("employeeGrid");
+    grid.innerHTML = "";
+    data.forEach(e=>{
+        grid.innerHTML += `
+        <div class="col-md-3 mb-4">
+            <div class="card card-user p-3">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="avatar me-2"><i class="bi bi-person"></i></div>
+                    <strong>${e.NAME}</strong>
+                </div>
+                <p>${e.EMAIL}</p>
+                <p>Salary: ${e.SALARYAMOUNT}</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-fill"
+                        onclick='openEdit(${JSON.stringify(e)})'>
+                        Edit
+                    </button>
+                    <button class="btn btn-danger"
+                        onclick="deleteEmployee(${e.EID})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    });
+}
+document.getElementById("editForm").onsubmit = ev => {
+    ev.preventDefault();
+    MockStore.updateEmployee({
+        eid: eID.value,
+        name: Name.value,
+        email: Email.value,
+        country: Country.value,
+        city: City.value,
+        street: Street.value,
+        holdername: HolderName.value,
+        accountnumber: AccountNumber.value,
+        salary: salaryAmount.value,
+        previouspaydate: PreviousPayDate.value || ""
+    });
+    location.reload();
+};
+function deleteEmployee(id){
+    if(!confirm("Delete this employee?")) return;
+    MockStore.deleteEmployee(id);
+    location.reload();
+}
+document.getElementById("searchInput").onkeyup = function () {
+    let v = this.value.toLowerCase();
+    renderEmployees(
+        employees.filter(e =>
+            String(e.NAME ?? "").toLowerCase().includes(v) ||
+            String(e.EMAIL ?? "").toLowerCase().includes(v)
+        )
+    );
+};
+function clearSearch(){
+    searchInput.value="";
+    renderEmployees(employees);
+}
+</script>
+</body>
+</html>
