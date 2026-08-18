@@ -11,7 +11,10 @@ pickups, loyalty cards and more).
  online (no server or database setup), the backend has been swapped for a small
  in-browser mock-data layer.
 
+## Live Demo
 
+** View the application here: **
+https://store-system-psut.vercel.app/
 
 
 ## Features
